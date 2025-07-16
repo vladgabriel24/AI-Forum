@@ -1,3 +1,6 @@
+# In this script, I will make a quick PoC for the workflow proposed
+
+
 import requests
 import configparser
 
