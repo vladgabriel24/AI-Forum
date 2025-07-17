@@ -66,4 +66,30 @@ aspects_DeepSeek = [chunk.text for chunk in nlp(response_DeepSeek).noun_chunks]
 aspects_Mistral = [chunk.text for chunk in nlp(response_Mistral).noun_chunks]
 
 
-# common_aspects = set(aspects_LaMA).intersection(set(aspects_DeepSeek).intersection(set(aspects_Mistral))) TO DO
+common_aspects = set(aspects_LaMA).intersection(set(aspects_DeepSeek),set(aspects_Mistral))
+
+print(common_aspects)
+
+words_to_clean = set(["it", "was", "which", "each"])
+
+cleaned_common_aspects = common_aspects.difference(words_to_clean)
+
+print(cleaned_common_aspects)
+
+viewpoint_analysis_prompt = f"\
+Given the following aspects: {cleaned_common_aspects}, count how many of the answers below have the same point of view. Give as the answer, just the number.\
+\nAnswer 1: {response_DeepSeek}\n, \nAnswer 2: {response_LLaMA}\n, \nAnswer 3: {response_Mistral}\n"
+
+print(viewpoint_analysis_prompt)
+
+response_LLaMA_viewpoint_analysis = query(API_URL_Cerebras, {
+    "messages": [
+        {
+            "role": "user",
+            "content": f"{viewpoint_analysis_prompt}"
+        }
+    ],
+    "model": "qwen-3-32b"
+})["choices"][0]["message"]["content"]
+
+print(response_LLaMA_viewpoint_analysis)
